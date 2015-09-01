@@ -10,10 +10,10 @@ static Window *window;
 static TextLayer *text_layer1;
 static TextLayer *text_layer2;
 static Layer *dial_layer;
-static uint16_t iInterval=9; //default
+static uint16_t iInterval=8; //default
 static uint16_t Intervals[]={1,2,3,4,5,6,7,8,9,10,15,20,25,30,45,60};
 #define nInterval 12
-#define PrestartTime 5
+#define PrestartTime 3
 static char str[]="999:99 min (max)";
 static uint16_t started=0; //0=initial stage 1=prestart 2=timer running 3=finished
 static mytimer TimerData;
@@ -36,11 +36,11 @@ static const VibePattern warning_1min = {
 static const VibePattern warning_30sec = {
   .durations = (uint32_t []) {1000},
   .num_segments = 1
-};
+};/*
 static const VibePattern warning_10sec = {
   .durations = (uint32_t []) {250},
   .num_segments = 9
-};
+};*/
 #define DialRadius 52
 #define DialLineThickness 3
 static GRect dial_layer_frame;
@@ -146,7 +146,8 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
   if (TimerData.min==5 && TimerData.sec==0 && Intervals[iInterval]>5) vibes_enqueue_custom_pattern(warning_5min); //on 5 min
   if (TimerData.min==1 && TimerData.sec==0 && Intervals[iInterval]>1) vibes_enqueue_custom_pattern(warning_1min); //on 1 min
   if (TimerData.min==0 && TimerData.sec==30) vibes_enqueue_custom_pattern(warning_30sec); //on last 30 sec
-  if (TimerData.min==0 && TimerData.sec==10) vibes_enqueue_custom_pattern(warning_10sec); //on last 10 sec
+  if (TimerData.min==0 && TimerData.sec<=10 && TimerData.sec>5) vibes_short_pulse(); //between last 10 and last 5 sec
+  if (TimerData.min==0 && TimerData.sec<=5) vibes_long_pulse(); //on last 5 sec
   //on half time
   if (Intervals[iInterval]>10)
   {
