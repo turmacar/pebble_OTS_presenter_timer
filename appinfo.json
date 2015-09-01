@@ -1,24 +1,29 @@
 {
-  "uuid": "2080f8d7-42fc-4fed-953b-714378f04189",
-  "shortName": "Presenter Timer",
-  "longName": "Timer designed to keep time during presentation and vibrate on half time, 5min, 1min and time over",
-  "companyName": "Fedor Iskhakov",
-  "versionCode": 1,
-  "versionLabel": "1.0.0",
-  "watchapp": {
-    "watchface": false
-  },
-  "appKeys": {
-    "dummy": 0
-  },
-  "resources": {
-    "media": [
-      {
-        "menuIcon": true,
-        "type": "png",
-        "name": "DEFAULT_MENU_ICON",
-        "file": "icon24.png"
-      }
-    ]
-  }
+    "appKeys": {
+        "roger": 1
+    },
+    "capabilities": [
+        ""
+    ],
+    "companyName": "Fedor Iskhakov",
+    "longName": "Timer designed to keep time during presentation and vibrate on half time, 5min, 1min and time over",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/icon24.png",
+                "menuIcon": true,
+                "name": "DEFAULT_MENU_ICON",
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "2",
+    "shortName": "Presenter Timer",
+    "uuid": "0b480985-2303-4cf4-a8c2-d5d2e4eff86e",
+    "versionCode": 1,
+    "versionLabel": "1.1",
+    "watchapp": {
+        "watchface": false
+    }
 }

@@ -10,8 +10,8 @@ static Window *window;
 static TextLayer *text_layer1;
 static TextLayer *text_layer2;
 static Layer *dial_layer;
-static uint16_t iInterval=6; //default
-static uint16_t Intervals[]={3,5,15,20,25,30,45,60,75,90,120,180};
+static uint16_t iInterval=9; //default
+static uint16_t Intervals[]={1,2,3,4,5,6,7,8,9,10,15,20,25,30,45,60};
 #define nInterval 12
 #define PrestartTime 5
 static char str[]="999:99 min (max)";
@@ -24,6 +24,22 @@ static const VibePattern prestart_beep = {
 static const VibePattern start_main = {
   .durations = (uint32_t []) {250},
   .num_segments = 1
+};
+static const VibePattern warning_5min = {
+  .durations = (uint32_t []) {250},
+  .num_segments = 5
+};
+static const VibePattern warning_1min = {
+  .durations = (uint32_t []) {500},
+  .num_segments = 1
+};
+static const VibePattern warning_30sec = {
+  .durations = (uint32_t []) {1000},
+  .num_segments = 1
+};
+static const VibePattern warning_10sec = {
+  .durations = (uint32_t []) {250},
+  .num_segments = 9
 };
 #define DialRadius 52
 #define DialLineThickness 3
@@ -101,6 +117,13 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
         vibes_enqueue_custom_pattern(start_main);
       }
     }
+    /*
+    started=2;
+    //initialize main timer
+    TimerData.min=Intervals[iInterval];
+    TimerData.sec=0;
+    vibes_enqueue_custom_pattern(start_main);
+    */
   }
   else
   { //timer running: decrease by 1 sec
@@ -120,16 +143,21 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
   display_timer();
   //vibrate
   if (started==1 && TimerData.sec<=5) vibes_enqueue_custom_pattern(prestart_beep);
-  if (TimerData.min==5 && TimerData.sec==0 && Intervals[iInterval]>5) vibes_double_pulse(); //on 5 min
-  if (TimerData.min==1 && TimerData.sec==0 && Intervals[iInterval]>1) vibes_double_pulse(); //on 1 min
+  if (TimerData.min==5 && TimerData.sec==0 && Intervals[iInterval]>5) vibes_enqueue_custom_pattern(warning_5min); //on 5 min
+  if (TimerData.min==1 && TimerData.sec==0 && Intervals[iInterval]>1) vibes_enqueue_custom_pattern(warning_1min); //on 1 min
+  if (TimerData.min==0 && TimerData.sec==30) vibes_enqueue_custom_pattern(warning_30sec); //on last 30 sec
+  if (TimerData.min==0 && TimerData.sec==10) vibes_enqueue_custom_pattern(warning_10sec); //on last 10 sec
   //on half time
-  if (Intervals[iInterval]%2==0)
-  { //even number of minutes
-      if (TimerData.min==Intervals[iInterval]/2 && TimerData.sec==0) vibes_double_pulse(); //on halftime
-  }
-  else
-  { //off number of minutes
-      if (TimerData.min==Intervals[iInterval]/2 && TimerData.sec==30) vibes_double_pulse(); //on halftime
+  if (Intervals[iInterval]>10)
+  {
+    if (Intervals[iInterval]%2==0)
+    { //even number of minutes
+        if (TimerData.min==Intervals[iInterval]/2 && TimerData.sec==0) vibes_double_pulse(); //on halftime
+    }
+    else
+    { //off number of minutes
+        if (TimerData.min==Intervals[iInterval]/2 && TimerData.sec==30) vibes_double_pulse(); //on halftime
+    }
   }
   //update dial
   layer_mark_dirty(dial_layer);
